@@ -7,6 +7,7 @@ import {
   TextInput,
   Text,
   View,
+  ActivityIndicator
 } from "react-native";
 import { auth, connectToDatabase } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -16,22 +17,28 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = () => {
+    setIsLoading(true);
+    setError("");
     signInWithEmailAndPassword(auth, email, password)
       .then(async () => {
         const user = auth.currentUser;
         const userDoc = await getDoc(doc(connectToDatabase(), "users", user.uid));
         const userRole = userDoc.data().role;
 
+        setIsLoading(false);
         if (userRole === "admin") {
           navigation.replace("admin");
         } else {
           navigation.replace("user");
         }
-        // navigation.replace('Home');
       })
-      .catch((error) => setError(error.message));
+      .catch((error) => {
+        setIsLoading(false);
+        setError(error.message);
+      });
   };
 
   return (
@@ -41,7 +48,6 @@ export default function LoginScreen({ navigation }) {
         source={require("../photos/Vector 1.png")}
         resizeMode="cover"
       />
-
       <View style={styles.abs_image}>
       </View>
       <View style={styles.form_container}>
@@ -69,13 +75,18 @@ export default function LoginScreen({ navigation }) {
           <TouchableOpacity>
             <Text style={styles.forgot}>Forgot Password ?</Text>
           </TouchableOpacity>
-          {/* {error ? <Text style={styles.error}>{error}</Text> : null} */}
-          <View style={styles.button}>
-            <TouchableOpacity style={styles.btn} onPress={handleLogin}>
-              <Text style={styles.btn_text}>Login</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.account}>
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {isLoading ? (
+            <View style={styles.activityIndicator}>
+            <ActivityIndicator size="large" color="#4D9899" />
+            <Text style={styles.loadingText}>Logging-in, please wait...</Text>
+            </View>
+          ) : (
+            <View style={styles.button}>
+              <TouchableOpacity style={styles.btn} onPress={handleLogin}>
+                <Text style={styles.btn_text}>Login</Text>
+              </TouchableOpacity>
+               <View style={styles.account}>
             <Text style={styles.account_text}>Don't have an account? </Text>
             <TouchableOpacity>
               <Text
@@ -88,6 +99,8 @@ export default function LoginScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -100,12 +113,15 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  forgot : {
-    position:"absolute",
+  forgot: {
+    position: "absolute",
     right: 0,
     marginTop: 5,
-    color:'#4D9899',
-    paddingRight:70,
+    color: "#4D9899",
+    paddingRight: 70,
+  },
+  activityIndicator: {
+    padding: 30,
   },
   top_image: {
     position: "absolute",
@@ -116,7 +132,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   form_container: {
-    paddingTop:'50%',
+    paddingTop: '50%',
     height: "100%",
     width: "100%",
     display: "flex",

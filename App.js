@@ -2,18 +2,28 @@ import React, { useEffect, useState } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import RouterStack from "./Navigation/Routerstack";
 import { connectToDatabase } from "./firebase";
-import SplashScreen from "./screens/SplashScreen";
+import SplashScreen from "./screens/SplashScreen"; 
+import ErrorScreen from "./screens/ErrorScreen"
+import { checkconnection } from "./internetconnection";
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+const [internetstatus , setInternetstatus] = useState(false);
+const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+const handleCheckConnection = async () => {
+  const res = await checkconnection();
+  setInternetstatus(res);
+};
+
+useEffect(() => {
+  handleCheckConnection();
+}, []);
+
+    useEffect(() => {
     const fetchData = async () => {
-      // Simulate a delay of 2-3 seconds before attempting to connect
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
       let connected = false;
       const startTime = new Date().getTime();
@@ -30,15 +40,12 @@ const App = () => {
       }
 
       if (!connected) {
-        setError(true);
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
-
-  return loading ? <SplashScreen /> : error ? <ErrorScreen /> : <RouterStack />;
+    }, []);
+    return loading ? <SplashScreen /> : internetstatus ? <RouterStack /> : <ErrorScreen onCheck={handleCheckConnection}/>;
 };
-
 export default App;

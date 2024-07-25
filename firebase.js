@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
+import { getStorage } from 'firebase/storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
     apiKey: "AIzaSyBsdM_DQreAkrlFSJKC-seH-ug9c1BY6S0",
@@ -14,19 +14,19 @@ const firebaseConfig = {
     measurementId: "G-8D3KYEVNSN"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
+const db = getFirestore(app);
+const storage = getStorage(app);
+
 const connectToDatabase = () => {
     try {
-        const db = getFirestore(app);
         return db;
-    }catch(err) {
-        console.error("Failed to connect to FireStore:", err);
+    } catch (err) {
+        console.error("Failed to connect to Firestore:", err);
     }
 }
 
-export { auth, connectToDatabase };
-
+export { auth, connectToDatabase, storage };

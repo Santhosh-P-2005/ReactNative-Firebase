@@ -18,7 +18,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.santhosh_p.authenticator"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -27,6 +28,14 @@
       "eas": {
         "projectId": "403c0f75-4f08-423c-9720-c30359f3d8de"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ]
   }
 }
