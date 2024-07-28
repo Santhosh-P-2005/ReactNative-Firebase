@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     paddingTop: '45%',
     height: "100%",
     width: "100%",
-    display: "flex",
+    flex:1,
   },
   form_title_container: {
     display: "flex",
