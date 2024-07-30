@@ -7,14 +7,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ScrollView,
   ActivityIndicator,
   Image,
+  Button,
 } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import UUID from 'react-native-uuid';
 import { connectToDatabase, storage } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 export default function EditProductScreen({ route, navigation }) {
   const { productId } = route.params;
@@ -25,9 +28,18 @@ export default function EditProductScreen({ route, navigation }) {
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
   const [size, setSize] = useState('');
+  const [gst, setGst] = useState('');
+  const [discount, setDiscount] = useState('');
   const [imageUri, setImageUri] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [hsncode, setHSNcode] = useState('');
+  const [remarks, setRemarks] = useState('');
+  const [barcode, setBarcode] = useState('');
   const [error, setError] = useState('');
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [text, setText] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,6 +53,12 @@ export default function EditProductScreen({ route, navigation }) {
           setColor(productData.color);
           setSize(productData.size);
           setImageUrl(productData.imageUrl);
+          setGst(productData.gst);
+          setDiscount(productData.discount);
+          setBarcode(productData.barcode);
+          setHSNcode(productData.hsncode);
+          setRemarks(productData.remarks);
+          setText("Scanned code is "+productData.barcode);
         } else {
           Alert.alert("Error", "Product not found");
           navigation.replace('admin');
@@ -54,6 +72,21 @@ export default function EditProductScreen({ route, navigation }) {
 
     fetchProduct();
   }, [productId]);
+
+  const askForCameraPermission = async () => {
+    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    setHasPermission(status === 'granted');
+    setScanning(true);
+    setScanned(false);
+  };
+
+  const handleBarCodeScanned = ({ type, data }) => {
+    setScanned(true);
+    setText("Scanned code is "+data);
+    setBarcode(data);
+    setScanning(false);
+    console.log('Type: ' + type + '\nData: ' + data);
+  };
 
   const handleSelectImage = async () => {
     try {
@@ -138,7 +171,12 @@ export default function EditProductScreen({ route, navigation }) {
         name,
         color,
         size,
+        gst: gst ? gst : '- - -',
+        discount: discount ? discount : '- - -',
         imageUrl,
+        barcode: barcode ? barcode :'- - -',
+        hsncode: hsncode ? hsncode : '- - -',
+        remarks: remarks ? remarks : '- - -',
       });
 
       Alert.alert("Success", "Product updated successfully");
@@ -151,6 +189,7 @@ export default function EditProductScreen({ route, navigation }) {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Edit Product</Text>
@@ -174,6 +213,36 @@ export default function EditProductScreen({ route, navigation }) {
           value={size}
           onChangeText={setSize}
         />
+        <TextInput
+          style={[styles.input, error ? styles.inputError : null]}
+          placeholder="GST"
+          value={gst}
+          onChangeText={setGst}
+        />
+        <TextInput
+          style={[styles.input, error ? styles.inputError : null]}
+          placeholder="Discount"
+          value={discount}
+          onChangeText={setDiscount}
+        />
+        <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            placeholder="HSN Code"
+            value={hsncode}
+            onChangeText={setHSNcode}
+          />
+          <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            placeholder="Remarks"
+            value={remarks}
+            onChangeText={setRemarks}
+          />
+          <TextInput
+            style={[styles.input, error ? styles.inputError : null]}
+            placeholder="Bar Code"
+            value={barcode}
+            onChangeText={setBarcode}
+          />
         <TouchableOpacity style={styles.selectImageButton} onPress={handleSelectImage}>
           <Text style={styles.selectImageText}>Select Image</Text>
         </TouchableOpacity>
@@ -196,6 +265,20 @@ export default function EditProductScreen({ route, navigation }) {
         {imageUrl && !imageUri && (
           <Image source={{ uri: imageUrl }} style={styles.image} />
         )}
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={askForCameraPermission}
+        >
+          <Text style={styles.scanButtonText}>Scan Barcode</Text>
+        </TouchableOpacity>
+        {scanning && (
+          <View style={styles.barcodebox}>
+            <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+              style={{ height: 400, width: 400 }} />
+          </View>
+        )}
+        <Text style={styles.maintext}>{text}</Text>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {loading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
@@ -210,13 +293,14 @@ export default function EditProductScreen({ route, navigation }) {
         )}
         <TouchableOpacity
           onPress={() => navigation.replace('admin')}
-          style={[styles.backButton, backButtonDisabled && styles.backButtonDisabled]} 
+          style={[styles.backButton, backButtonDisabled && styles.backButtonDisabled]}
           disabled={backButtonDisabled}
         >
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -277,6 +361,32 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  scanButton: {
+    backgroundColor: "#6200ee",
+    padding: 15,
+    borderRadius: 5,
+    marginVertical: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  scanButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  barcodebox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 300,
+    width: 300,
+    overflow: 'hidden',
+    borderRadius: 30,
+    backgroundColor: 'tomato'
+  },
+  maintext: {
+    fontSize: 16,
+    margin: 20,
+  },
   backButton: {
     alignSelf: 'flex-start',
     padding: 10,
@@ -285,7 +395,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   backButtonDisabled: {
-    backgroundColor: '#9E9E9E', 
+    backgroundColor: '#9E9E9E',
   },
   backButtonText: {
     color: '#fff',

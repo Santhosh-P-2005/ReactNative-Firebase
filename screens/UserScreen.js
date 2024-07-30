@@ -80,6 +80,9 @@ export default function UserScreen({ navigation }) {
                 <Text style={styles.productText}>Name: {item.name}</Text>
                 <Text style={styles.productText}>Color: {item.color}</Text>
                 <Text style={styles.productText}>Size: {item.size}</Text>
+                <Text style={styles.productText}>GST: {item.gst}</Text>
+                <Text style={styles.productText}>Dsicount: {item.discount}</Text>
+                <Text style={styles.productText}>ID: {item.productId}</Text>
               </View>
             )}
             contentContainerStyle={styles.listContainer}

@@ -108,6 +108,13 @@ export default function AdminScreen({ navigation }) {
                     <Text style={styles.productText}>Name: {item.name}</Text>
                     <Text style={styles.productText}>Color: {item.color}</Text>
                     <Text style={styles.productText}>Size: {item.size}</Text>
+                    <Text style={styles.productText}>GST: {item.gst}</Text>
+                    <Text style={styles.productText}>Discount: {item.discount}</Text>
+                    <Text style={styles.productText}>ID: {item.productId}</Text>
+                    {item.barcode && (
+                    <Text style={styles.productText}>Barcode: {item.barcode}</Text>)}
+                    <Text style={styles.productText}>HSN Code: {item.hsncode}</Text>
+                    <Text style={styles.productText}>Remarks: {item.remarks}</Text>
                   </View>
                   <View style={styles.productActions}>
                     <TouchableOpacity
