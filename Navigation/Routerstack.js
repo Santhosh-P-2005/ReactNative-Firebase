@@ -60,7 +60,10 @@ const RouteStack = () => {
             <Tab.Screen name="EditProduct" component={EditProductScreen} />
             </>
           ) : (
+            <>
             <Stack.Screen name="user" component={UserScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            </>
           )
         ) : (
           <>

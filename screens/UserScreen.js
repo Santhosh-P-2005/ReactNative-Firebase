@@ -83,6 +83,10 @@ export default function UserScreen({ navigation }) {
                 <Text style={styles.productText}>GST: {item.gst}</Text>
                 <Text style={styles.productText}>Dsicount: {item.discount}</Text>
                 <Text style={styles.productText}>ID: {item.productId}</Text>
+                {item.barcode && (
+                    <Text style={styles.productText}>Barcode: {item.barcode}</Text>)}
+                    <Text style={styles.productText}>HSN Code: {item.hsncode}</Text>
+                    <Text style={styles.productText}>Remarks: {item.remarks}</Text>
               </View>
             )}
             contentContainerStyle={styles.listContainer}
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    paddingTop: 50,
+    paddingTop: 40,
     backgroundColor: "#6200ee",
     alignItems: "center",
   },
