@@ -20,13 +20,14 @@ export default function AdminScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [error, setError] = useState("");
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const productsCollection = collection(db, "products");
       const productSnapshot = await getDocs(productsCollection);
-      const productList = productSnapshot.docs.map(doc => ({
+      const productList = productSnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
@@ -56,7 +57,7 @@ export default function AdminScreen({ navigation }) {
   };
 
   const handleDeleteProduct = async (id, imageUrl) => {
-    setLoading(true);
+    setDeletingProductId(id);
     try {
       if (imageUrl) {
         const imageRef = ref(storage, imageUrl);
@@ -70,7 +71,7 @@ export default function AdminScreen({ navigation }) {
     } catch (error) {
       Alert.alert("Error", "Failed to delete product.");
     } finally {
-      setLoading(false);
+      setDeletingProductId(null);
     }
   };
 
@@ -126,8 +127,13 @@ export default function AdminScreen({ navigation }) {
                     <TouchableOpacity
                       style={styles.deleteBtn}
                       onPress={() => handleDeleteProduct(item.id, item.imageUrl)}
+                      disabled={deletingProductId === item.id}
                     >
-                      <Text style={styles.actionText}>Delete</Text>
+                      {deletingProductId === item.id ? (
+                        <ActivityIndicator size="small" color="#ffffff" />
+                      ) : (
+                        <Text style={styles.actionText}>Delete</Text>
+                      )}
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    paddingTop: 40,
+    paddingTop: 50,
     backgroundColor: "#6200ee",
     flexDirection: "row",
     justifyContent: "space-between",
