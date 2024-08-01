@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "authenticator",
-    "slug": "authenticator",
+    "slug": "finalapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,7 +29,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "bceebc4c-b6c2-4a2e-b4a9-1e3116b3b81f"
+        "projectId": "ec2d8bed-69a0-4ef5-9ad7-ed389846ef04"
       }
     },
     "plugins": [

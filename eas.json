@@ -5,7 +5,8 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "releaseChannel": "development"
     },
     "preview": {
       "distribution": "internal",
@@ -14,6 +15,7 @@
       }
     },
     "production": {
+      "releaseChannel": "production",
       "distribution": "store",
       "android": {
         "buildType": "app-bundle"
