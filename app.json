@@ -22,14 +22,15 @@
       "package": "com.santhosh_p.authenticator",
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "minSdkVersion": 23
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "ec2d8bed-69a0-4ef5-9ad7-ed389846ef04"
+        "projectId": "e39529e4-46f3-4719-a9a9-ef36bf788730"
       }
     },
     "plugins": [
@@ -37,6 +38,18 @@
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0",
+            "minSdkVersion": 23,
+            "kotlinVersion": "1.6.10"
+          }
         }
       ]
     ],

@@ -300,6 +300,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    marginTop: 20,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,

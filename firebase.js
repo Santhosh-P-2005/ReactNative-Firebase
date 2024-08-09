@@ -10,14 +10,16 @@ const firebaseConfig = {
     projectId: "login-a27b2",
     storageBucket: "login-a27b2.appspot.com",
     messagingSenderId: "766627127585",
-    appId: "1:766627127585:web:0523f4cfb7fe0490a9de60",
+    appId: "1:766627127585:web:052340cfb70fe49a9fde60",
     measurementId: "G-8D3KYEVNSN"
 };
 
 const app = initializeApp(firebaseConfig);
+
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage),
 });
+
 const db = getFirestore(app);
 const storage = getStorage(app);
 
@@ -27,6 +29,6 @@ const connectToDatabase = () => {
     } catch (err) {
         console.error("Failed to connect to Firestore:", err);
     }
-}
+};
 
 export { auth, connectToDatabase, storage };
