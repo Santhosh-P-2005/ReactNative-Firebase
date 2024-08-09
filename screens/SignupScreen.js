@@ -59,7 +59,6 @@ export default function SignupScreen({ navigation }) {
           });
         }
         setIsLoading(false);
-        navigation.replace("Login");
       })
       .catch((error) => {
         setIsLoading(false);
@@ -77,7 +76,7 @@ export default function SignupScreen({ navigation }) {
         />
         <View style={styles.form_container}>
           <View style={styles.form_title_container}>
-            <Text style={styles.heading}>Register</Text>
+            <Text style={styles.heading}>SignUp</Text>
           </View>
           <View style={styles.form}>
             <View style={styles.form_input1}>
@@ -117,7 +116,7 @@ export default function SignupScreen({ navigation }) {
             ) : (
               <View style={styles.button}>
                 <TouchableOpacity style={styles.btn} onPress={handleSignup}>
-                  <Text style={styles.btn_text}>Register</Text>
+                  <Text style={styles.btn_text}>SignUp</Text>
                 </TouchableOpacity>
               </View>
             )}

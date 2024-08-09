@@ -62,7 +62,6 @@ const RouteStack = () => {
           ) : (
             <>
             <Stack.Screen name="user" component={UserScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
             </>
           )
         ) : (

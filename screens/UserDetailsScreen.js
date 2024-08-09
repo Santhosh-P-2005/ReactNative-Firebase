@@ -10,12 +10,13 @@ import {
   Alert,
 } from "react-native";
 import { connectToDatabase } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 export default function UserDetailsScreen({ navigation }) {
   const db = connectToDatabase();
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [loadingStates, setLoadingStates] = useState({});
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -36,11 +37,82 @@ export default function UserDetailsScreen({ navigation }) {
     fetchUsers();
   }, []);
 
+  const updateUserRole = async (userId, newRole) => {
+    setLoadingStates((prevState) => ({ ...prevState, [userId]: true }));
+    try {
+      await updateDoc(doc(db, "users", userId), { role: newRole });
+      Alert.alert("Success", `User role updated to ${newRole}.`);
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const usersList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUsers(usersList);
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [userId]: false }));
+    }
+  };
+
+  const handleRemoveUser = async (userId) => {
+    setLoadingStates((prevState) => ({ ...prevState, [userId]: true }));
+    try {
+      await deleteDoc(doc(db, "users", userId));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      Alert.alert("Success", "User removed successfully.");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoadingStates((prevState) => ({ ...prevState, [userId]: false }));
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.itemText}>
-        {item.email} - {item.role}
-      </Text>
+      <Text style={styles.itemText}>{item.email} - {item.role}</Text>
+      <View style={styles.buttonsContainer}>
+        {item.role !== "admin" && (
+          <TouchableOpacity
+            style={styles.makeAdminButton}
+            onPress={() => updateUserRole(item.id, "admin")}
+            disabled={loadingStates[item.id]}
+          >
+            {loadingStates[item.id] ? (
+              <Text style={styles.loadingbuttonText}>Please wait...
+            <ActivityIndicator color="white" /></Text>
+            ) : (
+              <Text style={styles.buttonText}>Make Admin</Text>
+            )}
+          </TouchableOpacity>
+        )}
+        {item.role !== "user" && (
+          <TouchableOpacity
+            style={styles.makeUserButton}
+            onPress={() => updateUserRole(item.id, "user")}
+            disabled={loadingStates[item.id]}
+          >
+            {loadingStates[item.id] ? (
+            <Text style={styles.loadingbuttonText}>Please wait...
+            <ActivityIndicator color="white" /></Text>
+            ) : (
+              <Text style={styles.buttonText}>Make User</Text>
+            )}
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={styles.removeButton}
+          onPress={() => handleRemoveUser(item.id)}
+          disabled={loadingStates[item.id]}
+        >
+          {loadingStates[item.id] ? (
+            <Text style={styles.loadingbuttonText}>Please wait...
+            <ActivityIndicator color="white" /></Text>
+          ) : (
+            <Text style={styles.removeButtonText}>Remove</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -113,6 +185,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#0000ff",
   },
+  loadingbuttonText: {
+    textAlign: "center",
+    color: "white",
+  },
   itemContainer: {
     backgroundColor: "#ffffff",
     borderRadius: 5,
@@ -131,13 +207,38 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+    marginBottom: 10,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  makeAdminButton: {
+    backgroundColor: "#6200ee",
+    padding: 10,
+    borderRadius: 5,
+  },
+  makeUserButton: {
+    backgroundColor: "#03dac5",
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   listContainer: {
     paddingBottom: 100,
   },
-  welcome: {
-    fontSize: 18,
-    marginBottom: 20,
+  removeButton: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  removeButtonText: {
+    color: "#fff",
     textAlign: "center",
+    fontWeight: "bold",
   },
 });

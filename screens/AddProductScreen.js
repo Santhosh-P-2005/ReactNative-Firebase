@@ -161,6 +161,7 @@ export default function AddProductScreen({ navigation }) {
       setBarcode('');
       setHSNcode('');
       setRemarks('');
+      setText('Not yet scanned');
       setLoading(false);
       setBackButtonEnabled(true);
     } catch (error) {

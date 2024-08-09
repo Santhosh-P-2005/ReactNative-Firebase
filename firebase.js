@@ -5,13 +5,13 @@ import { getStorage } from 'firebase/storage';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBsdM_DQreAkrlFSJKC-seH-ug9c1BY6S0",
-    authDomain: "login-a27b2.firebaseapp.com",
-    projectId: "login-a27b2",
-    storageBucket: "login-a27b2.appspot.com",
-    messagingSenderId: "766627127585",
-    appId: "1:766627127585:web:052340cfb70fe49a9fde60",
-    measurementId: "G-8D3KYEVNSN"
+    apiKey: "AIzaSyCk8UizTrp0xSKe2xGFqKs3kJl1-u6lp18",
+    authDomain: "paint-shop-5b154.firebaseapp.com",
+    projectId: "paint-shop-5b154",
+    storageBucket: "paint-shop-5b154.appspot.com",
+    messagingSenderId: "25874112479",
+    appId: "1:2587412479:web:359f4d9911443626defae6a",
+    measurementId: "G-VXTXEJ13DG"
 };
 
 const app = initializeApp(firebaseConfig);
